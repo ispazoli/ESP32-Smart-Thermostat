@@ -46,7 +46,7 @@ Ez az egység felel a fizikai mérésért és kapcsolásért.
 1.  Telepítsd a Tasmota firmware-t az ESP8266/ESP32 eszközre.
 2.  Állítsd be a Tasmota felületén a DS18B20 szenzort (pl. a D4-es GPIO-n).
 3.  Állítsd be a relét (pl. a D1-es GPIO-n).
-4.  Győződj meg róla, hogy az egység fix IP címet kap a routereden (pl. `192.168.1.193`).
+4.  Győződj meg róla, hogy az egység fix IP címet kap a routereden (pl. `192.168.1.10`).
 5.  Ellenőrizd, hogy a `http://<IP>/cm?cmnd=Status%208` parancsra JSON választ kapsz, ami tartalmazza a hőmérsékleti adatot.
 6.  Ellenőrizd, hogy a `http://<IP>/cm?cmnd=Power%20On` és `Power%20Off` parancsokkal tudod kapcsolni a relét.
 
@@ -77,7 +77,7 @@ Ez a projekt fő firmware-e.
     * **`config.h`:** Itt kell beillesztened a 2. Lépésben kapott Google Script URL-t a `G_SCRIPT_URL` makróba.
     * **`ESP_Thermostat_Pro_v6_5_1_Calendar_Backend.ino`:** A globális változók között állítsd be a Tasmota egységed IP címét és parancsait:
         ```cpp
-        String remoteHost = "[http://192.168.1.193](http://192.168.1.193)"; // <-- Cseréld le a Tasmota IP-jére
+        String remoteHost = "[http://192.168.1.10](http://192.168.1.10)"; // <-- Cseréld le a Tasmota IP-jére
         String relayOn = "/cm?cmnd=Power%20On";
         String relayOff = "/cm?cmnd=Power%20Off";
         ```
@@ -198,7 +198,7 @@ This unit is responsible for the physical measurements and switching.
 1.  Flash the Tasmota firmware onto your ESP8266/ESP32 device.
 2.  In the Tasmota web UI, configure the DS18B20 sensor (e.g., on GPIO D4).
 3.  Configure the Relay (e.g., on GPIO D1).
-4.  Ensure this unit has a static IP address on your router (e.g., `192.168.1.193`).
+4.  Ensure this unit has a static IP address on your router (e.g., `192.168.1.10`).
 5.  Verify that `http://<IP>/cm?cmnd=Status%208` returns a JSON response containing the temperature.
 6.  Verify that `http://<IP>/cm?cmnd=Power%20On` and `Power%20Off` successfully toggle the relay.
 
@@ -229,7 +229,7 @@ This is the main firmware for the project.
     * **`config.h`:** Paste your Google Script URL from Step 2 into the `G_SCRIPT_URL` macro.
     * **`ESP_Thermostat_Pro_v6_5_1_Calendar_Backend.ino`:** In the global variables section, set the IP address and commands for your Tasmota unit:
         ```cpp
-        String remoteHost = "[http://192.168.1.193](http://192.168.1.193)"; // <-- Change to your Tasmota's IP
+        String remoteHost = "[http://192.168.1.10](http://192.168.1.10)"; // <-- Change to your Tasmota's IP
         String relayOn = "/cm?cmnd=Power%20On";
         String relayOff = "/cm?cmnd=Power%20Off";
         ```
