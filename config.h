@@ -37,4 +37,4 @@ struct LogPoint {
  * =============================================================== */
 #define G_SCRIPT_ENABLED true
 // Paste your SECRET URL
-#define G_SCRIPT_URL "https://script.google.com/macros/s/AKfycbw3NSTfXFFXjk8eJhbV2JhLOHXp7_MQeGUyOW3zZTWmxaeO0IQiNxOI0SNcWKwzOC2bfg/exec" // <-- Your Sheet Link
+#define G_SCRIPT_URL "https://script.google.com/macros/s/exec" // <-- Your Sheet Link
