@@ -1,0 +1,927 @@
+/* ===============================================================
+ * ESP Thermostat PRO - STYLESHEET v2.1 (Bugs & Features)
+ * =============================================================== */
+
+/* --- Fonts (Segment7/DS-Digital are best-effort for Siemens) --- */
+@font-face {
+  font-family: 'Segment7';
+  src: url('https://user-uploads.githubusercontent.com/137834/116937497-2de70000-ab8f-11eb-9e58-011c2f9e9905.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- :root (DEFAULT) - 'apple' as base --- */
+:root, html[data-theme='apple'] {
+  --bg: #f0f2f5;
+  --card: rgba(255, 255, 255, 0.75);
+  --text: #1d1d1f;
+  --text-label: #6e6e73;
+  --accent: #007AFF;
+  --accent-eco: #34c759;
+  --accent-boost: #ff9500;
+  --accent-preheat: #007AFF;
+  --gray: #8e8e93;
+  --sep: rgba(60, 60, 67, 0.15);
+  --font-main: -apple-system, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  --btn-bg: rgba(255, 255, 255, 0.6);
+  --btn-text: var(--accent);
+  --btn-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  --card-radius: 20px;
+  --card-border: 1px solid rgba(0,0,0,0.1);
+  --card-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  --main-disp-bg: rgba(255,255,255,0.4);
+  --main-disp-color: #000;
+  --main-disp-shadow: none;
+  --main-disp-target-color: #333;
+  --main-disp-prog-label: var(--text-label);
+  --main-disp-prog-color: #000;
+  --health-bar-bg: linear-gradient(180deg, #e0e0e0, #c8c8c8);
+  --health-bar-fill: linear-gradient(90deg, #66b3ff 0%, #007aff 100%);
+  --health-bar-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+  --health-label-color: var(--text);
+  --chart-font: -apple-system, 'SF Pro Display', sans-serif;
+  --chart-font-size: 12;
+  --chart-color: #111;
+  --chart-grid-color: rgba(0,0,0,0.1);
+  --chart-line-color: #007AFF;
+  --chart-tension: 0.3;
+  --chart-stepped: false;
+  --gauge-bg: #e9ecef;
+  --gauge-fill: linear-gradient(90deg, #007bff 0%, #34c759 50%, #ffc107 85%, #dc3545 100%);
+  --gauge-cover: var(--card);
+}
+body.dark, html[data-theme='apple'].dark {
+  --bg: #101011;
+  --card: rgba(28, 28, 30, 0.75);
+  --text: #f5f5f7;
+  --text-label: #8d8d92;
+  --accent: #0A84FF;
+  --accent-eco: #30d158;
+  --accent-boost: #ff9f0a;
+  --accent-preheat: #0A84FF;
+  --gray: #8e8e93;
+  --sep: rgba(84, 84, 88, 0.4);
+  --btn-bg: rgba(50, 50, 52, 0.7);
+  --btn-text: var(--accent);
+  --card-border: 1px solid rgba(255,255,255,0.1);
+  --main-disp-bg: rgba(20, 20, 22, 0.6);
+  --main-disp-color: #fff;
+  --main-disp-target-color: #ccc;
+  --main-disp-prog-label: var(--text-label);
+  --main-disp-prog-color: #fff;
+  --health-bar-bg: linear-gradient(180deg, #444, #333);
+  --health-bar-shadow: inset 0 1px 2px rgba(255,255,255,0.15);
+  --chart-color: #f5f5f5;
+  --chart-grid-color: rgba(255,255,255,0.15);
+  --chart-line-color: #0A84FF;
+  --gauge-bg: #343a40;
+  --gauge-cover: var(--card);
+}
+
+/* --- Siemens (Brutalist/Industrial) --- */
+html[data-theme='siemens'] {
+  --bg: #3a3a3a linear-gradient(0deg, rgba(0,0,0,0.15), rgba(255,255,255,0.15));
+  --card: #2c2c2e;
+  --text: #e1e1e1;
+  --text-label: #9a9a9a;
+  --accent: #00f0a0; /* Siemens Green/Cyan */
+  --accent-eco: #00f0a0;
+  --accent-boost: #ffc000; /* Siemens Amber */
+  --accent-preheat: #3399ff; /* Siemens Blue */
+  --gray: #89a2b8;
+  --sep: rgba(255,255,255,.1);
+  --font-main: 'Roboto Condensed', 'Arial Narrow', sans-serif;
+  --btn-bg: linear-gradient(180deg, #555, #444);
+  --btn-text: #f0f0f0;
+  --btn-shadow: 0 2px 0 rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+  --card-radius: 4px;
+  --card-border: 1px solid rgba(0,0,0,0.5);
+  --card-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  --main-disp-bg: #1a1a1a;
+  --main-disp-color: var(--accent);
+  --main-disp-shadow: 0 0 12px var(--accent), 0 0 4px var(--accent);
+  --main-disp-target-color: #ccc;
+  --main-disp-prog-label: #888;
+  --main-disp-prog-color: #e1e1e1;
+  --health-bar-bg: linear-gradient(180deg, #1a1a1a, #0e0e0e);
+  --health-bar-fill: linear-gradient(90deg, #0066cc 0%, #33aaff 50%, #0099ff 100%);
+  --health-bar-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 0 6px rgba(0,160,255,0.25);
+  --health-label-color: #cce8ff;
+  --chart-font: 'Roboto Condensed', sans-serif;
+  --chart-color: #e1e1e1;
+  --chart-grid-color: rgba(255,255,255,0.2);
+  --chart-line-color: var(--accent);
+  --chart-tension: 0;
+  --chart-stepped: true;
+  --gauge-bg: #1a1a1a;
+  --gauge-fill: linear-gradient(90deg, #3399ff 0%, #00f0a0 50%, #ffc000 85%, #ff4d4d 100%);
+  --gauge-cover: var(--card);
+}
+html[data-theme='siemens'].dark { /* Siemens is already dark */ }
+
+/* --- Nest (Material You) --- */
+html[data-theme='nest'] {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text: #1f1f1f;
+  --text-label: #444746;
+  --accent: #0b57d0; /* M3 Blue */
+  --accent-eco: #137333; /* M3 Green */
+  --accent-boost: #f9ab00; /* M3 Yellow */
+  --accent-preheat: #0b57d0;
+  --gray: #70757a;
+  --sep: #e0e0e0;
+  --font-main: 'Roboto', 'Google Sans', sans-serif;
+  --btn-bg: var(--accent);
+  --btn-text: #ffffff;
+  --btn-shadow: 0 1px 2px rgba(0,0,0,.1);
+  --card-radius: 28px;
+  --card-border: 1px solid #ddd;
+  --card-shadow: 0 4px 12px rgba(0,0,0,.08);
+  --main-disp-bg: #f0f4f9; /* M3 Surface */
+  --main-disp-color: #1f1f1f;
+  --main-disp-shadow: none;
+  --main-disp-target-color: #444746;
+  --main-disp-prog-label: var(--text-label);
+  --main-disp-prog-color: #1f1f1f;
+  --health-bar-bg: #e8eaed;
+  --health-bar-fill: #00BFA5;
+  --health-bar-shadow: none;
+  --health-label-color: var(--text);
+  --chart-font: 'Roboto', sans-serif;
+  --chart-color: #1f1f1f;
+  --chart-grid-color: rgba(0,0,0,0.1);
+  --chart-line-color: var(--accent);
+  --chart-tension: 0.4;
+  --chart-stepped: false;
+  --gauge-bg: #e8eaed;
+  --gauge-fill: linear-gradient(90deg, #0b57d0 0%, #137333 50%, #f9ab00 85%, #d93025 100%);
+  --gauge-cover: var(--card);
+}
+html[data-theme='nest'].dark {
+  --bg: #1a1a1a;
+  --card: #282828;
+  --text: #e8eaed;
+  --text-label: #bdc1c6;
+  --accent: #7cacf8; /* M3 Blue Dark */
+  --accent-eco: #81c995; /* M3 Green Dark */
+  --accent-boost: #fdd663; /* M3 Yellow Dark */
+  --accent-preheat: #7cacf8;
+  --gray: #9aa0a6;
+  --sep: #5f6368;
+  --btn-bg: var(--accent);
+  --btn-text: #1a1a1a; /* Dark text for light blue button */
+  --card-border: 1px solid #5f6368;
+  --card-shadow: 0 4px 12px rgba(0,0,0,.2);
+  --main-disp-bg: #2f3033;
+  --main-disp-color: #e8eaed;
+  --main-disp-target-color: #bdc1c6;
+  --main-disp-prog-label: var(--text-label);
+  --main-disp-prog-color: #e8eaed;
+  --health-bar-bg: #3c4043;
+  --chart-color: #e8eaed;
+  --chart-grid-color: rgba(255,255,255,0.2);
+  --chart-line-color: var(--accent);
+  --gauge-bg: #3c4043;
+  --gauge-cover: var(--card);
+}
+
+/* --- Base Styles --- */
+*{ box-sizing: border-box; }
+body{
+  margin: 0;
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color .4s ease, color .4s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3 {
+  margin: 12px 0 8px 0;
+  font-weight: 700;
+  color: var(--text);
+}
+label, .label {
+  color: var(--text-label);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+header, nav {
+  background: var(--card);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,.08);
+  border-bottom: var(--card-border);
+}
+header h1 { margin: 0; font-size: 1.1rem; }
+.clock{ font-size: 1rem; opacity: .85; }
+.topright{ display: flex; gap: 12px; align-items: center; }
+button.icon{ border: none; background: transparent; color: var(--text); font-size: 1.2rem; cursor: pointer; opacity: .8; }
+nav{
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 6px 8px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  border-bottom: var(--card-border);
+}
+.tab{
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+}
+.tab.active{
+  background: var(--btn-bg);
+  box-shadow: var(--btn-shadow);
+  color: var(--btn-text);
+}
+html[data-theme='apple'] .tab.active { background: var(--sep); color: var(--text); }
+html[data-theme='nest'] .tab { border-radius: 999px; }
+html[data-theme='nest'] .tab.active { background: var(--accent); color: var(--btn-text); }
+/* BUG FIX: Nest dark theme active tab text */
+html[data-theme='nest'].dark .tab.active {
+  color: var(--bg); /* Use dark bg color for text */
+}
+html[data-theme='siemens'] .tab { border-radius: 4px; }
+html[data-theme='siemens'] .tab.active { background: var(--accent); color: #000; }
+
+main{ padding: 14px; }
+.card{
+  border-radius: var(--card-radius);
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  max-width: 980px;
+  margin: 10px auto;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: var(--card);
+  border: var(--card-border);
+}
+.row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+  border-bottom: 1px solid var(--sep);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.row:last-child{ border-bottom: none; }
+label{ min-width: 150px; }
+input, select{
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--sep);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+}
+html[data-theme='siemens'] input, html[data-theme='siemens'] select {
+  background: #333;
+  border-color: #555;
+}
+
+button.primary, a.primary, button#b_csv, button#b_clear, #rebootBtn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid transparent;
+  padding: 9px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: var(--btn-shadow);
+  font-family: var(--font-main);
+  text-decoration: none;
+}
+html[data-theme='nest'] button.primary, 
+html[data-theme='nest'] a.primary,
+html[data-theme='nest'] button#b_csv, 
+html[data-theme='nest'] button#b_clear, 
+html[data-theme='nest'] #rebootBtn { 
+  border-radius: 999px; 
+}
+html[data-theme='siemens'] button.primary, 
+html[data-theme='siemens'] a.primary,
+html[data-theme='siemens'] button#b_csv, 
+html[data-theme='siemens'] button#b_clear, 
+html[data-theme='siemens'] #rebootBtn { 
+  border-radius: 4px; 
+  border: 1px solid #666;
+}
+button.primary:active, a.primary:active, 
+button#b_csv:active, button#b_clear:active, #rebootBtn:active {
+  box-shadow: none;
+  transform: scale(0.98);
+}
+
+.badge{
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+.badge.on{ background: linear-gradient(180deg, #b6ffcb, #78d694); color: #0b3d1a; }
+.badge.off{ background: linear-gradient(180deg, #bfbfbf, #9d9d9d); color: #232323; }
+.badge.boost{ background: var(--accent-boost); color: #fff; }
+.badge.eco{ background: var(--accent-eco); color: #fff; }
+.badge.preheat{ background: var(--accent-preheat); color: #fff; }
+
+html[data-theme='nest'] .badge { border-radius: 999px; }
+html[data-theme='siemens'] .badge { border-radius: 2px; color: #000; }
+html[data-theme='siemens'] .badge.on { background: var(--accent-eco); }
+html[data-theme='siemens'] .badge.off { background: #556; color: #ccc; }
+
+.grid2{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+footer{ opacity: .7; text-align: center; padding: 18px 8px; font-size: .9rem; }
+.small{ opacity: .75; font-size: .9rem; }
+.hidden{ display: none; }
+.center{ text-align: center; }
+.kv{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 14px; font-size: 1.1rem; text-align: center; }
+.kv > div > b { display: block; font-size: 1.4rem; color: var(--accent); }
+html[data-theme='nest'] .kv { gap: 12px; font-size: 10px; }
+html[data-theme='nest'] .kv > div > b { font-size: 1.2rem; color: var(--text); }
+.devgrid .row{ gap: 20px; }
+.devgrid label{ min-width: 120px; font-weight: 600; }
+.weather-hero{ display: flex; gap: 18px; align-items: center; justify-content: center; text-align: center; }
+
+/* --- Main Display Panel --- */
+.main-display {
+  background: var(--main-disp-bg);
+  color: var(--main-disp-color);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  padding: 24px;
+  text-align: center;
+  text-shadow: var(--main-disp-shadow);
+  transition: box-shadow .5s ease, border-color .5s ease;
+}
+.main-display .current-temp {
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  transition: color .5s ease, text-shadow .5s ease;
+}
+.main-display .target-temp {
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--main-disp-target-color);
+}
+.main-display .program {
+  font-size: 10px;
+  line-height: 1.4;
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+.main-display .program label {
+  color: var(--main-disp-prog-label);
+  display: block;
+  min-width: 0;
+  font-size: 10px;
+}
+.main-display .program span {
+  color: var(--main-disp-prog-color);
+  font-size: 12px;
+}
+.main-display .badges {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* --- Siemens-specific Font --- */
+html[data-theme='siemens'] .main-display .current-temp,
+html[data-theme='siemens'] .main-display .target-temp {
+  font-family: 'Segment7', 'DS-Digital', monospace;
+  font-weight: normal;
+  letter-spacing: 2px;
+}
+html[data-theme='siemens'] .main-display .current-temp { font-size: 72px; }
+html[data-theme='siemens'] .main-display .target-temp { font-size: 28px; }
+
+/* --- Function Buttons (NEW: Icon styles) --- */
+.function-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+.function-buttons button {
+  padding: 12px 8px;
+  height: 60px;
+  /* Center icon and text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.function-buttons button .icon {
+  margin-right: 6px;
+  font-size: 1.1rem;
+}
+.btn-boost{
+  background: var(--accent-boost);
+  color: #fff;
+  border-color: var(--accent-boost);
+}
+.btn-eco{
+  background: var(--accent-eco);
+  color: #fff;
+  border-color: var(--accent-eco);
+}
+html[data-theme='siemens'] .btn-boost,
+html[data-theme='siemens'] .btn-eco {
+  color: #000;
+}
+html[data-theme='nest'] .function-buttons button {
+  background: var(--bg);
+  color: var(--text-label);
+  border: 1px solid var(--sep);
+  border-radius: 18px;
+}
+html[data-theme='nest'] .function-buttons .btn-boost {
+  background: var(--accent-boost);
+  color: var(--text);
+}
+html[data-theme='nest'] .function-buttons .btn-eco {
+  background: var(--accent-eco);
+  color: #fff;
+}
+
+/* --- Slider --- */
+.slider{
+  appearance: none;
+  width: 260px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #eeeeee, #d0d0d0);
+  border: 1px solid #bdbdbd;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+.slider::-webkit-slider-thumb{
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffffff, #dcdcdc);
+  border: 1px solid #bcbcbc;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+html[data-theme='siemens'] .slider {
+  height: 10px;
+  background: #1c3245;
+  border-color: #3e5f7a;
+}
+html[data-theme='siemens'] .slider::-webkit-slider-thumb {
+  background: var(--accent-preheat);
+  border-color: #006b99;
+}
+html[data-theme='nest'] .slider{
+  height: 10px;
+  background: var(--bg);
+  border-color: var(--sep);
+  box-shadow: none;
+}
+html[data-theme='nest'] .slider::-webkit-slider-thumb{
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+canvas{ background: var(--card); border-radius: var(--card-radius); border: var(--card-border); }
+
+.toggle{
+  position: relative;
+  width: 58px;
+  height: 30px;
+  border-radius: 999px;
+  background: #bdbdbd;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid #a9a9a9;
+}
+.toggle .knob{
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  transition: .2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+.toggle.on{ background: linear-gradient(180deg, #dcdcdc, #bdbdbd); }
+.toggle.on .knob{ left: 31px; }
+html[data-theme='siemens'] .toggle { background: #1c3245; border-color: #3e5f7a; }
+html[data-theme='siemens'] .toggle .knob { background: var(--gray); }
+html[data-theme='siemens'] .toggle.on { background: var(--accent-eco); }
+html[data-theme='siemens'] .toggle.on .knob { background: #fff; }
+html[data-theme='nest'] .toggle{
+  background: var(--bg);
+  border-color: var(--sep);
+}
+html[data-theme='nest'] .toggle .knob{
+  background: var(--gray);
+}
+html[data-theme='nest'] .toggle.on {
+  background: var(--accent-eco);
+  border-color: var(--accent-eco);
+}
+html[data-theme='nest'] .toggle.on .knob { background: #fff; }
+
+#boostLeft { font-size: 10px; text-align: center; margin-top: 8px; opacity: .85; }
+@media (max-width: 1024px) {
+  .main-display .current-temp { font-size: 56px; }
+  .main-display .target-temp { font-size: 20px; }
+}
+
+/* --- Health/Diagnostics Bars (Original) --- */
+.health-bar {
+  width: 100%;
+  height: 16px;
+  background: var(--health-bar-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--health-bar-shadow);
+  margin: 6px 0;
+}
+.health-fill {
+  height: 100%;
+  background: var(--health-bar-fill);
+  border-radius: 8px;
+  transition: width 0.4s ease;
+}
+html[data-theme='siemens'] .health-fill {
+  box-shadow: 0 0 10px rgba(0,160,255,0.6);
+  animation: pulse-diag-bar 3s ease-in-out infinite;
+}
+html[data-theme='apple'] .health-fill, html[data-theme='nest'] .health-fill {
+  box-shadow: none;
+  animation: none;
+}
+@keyframes pulse-diag-bar {
+  0%, 100% { filter: brightness(1.1); }
+  50% { filter: brightness(1.6); }
+}
+.health-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--health-label-color);
+  margin-bottom: 2px;
+}
+html[data-theme='siemens'] .health-label {
+  text-shadow: 0 0 6px rgba(0,180,255,0.5);
+}
+html[data-theme='apple'] .health-label, html[data-theme='nest'] .health-label {
+  text-shadow: none;
+  font-size: 10px;
+}
+
+/* --- Heating Active Glow (MODIFIED: Now pulses) --- */
+.main-display.heating-active {
+  border-color: var(--accent-boost);
+  /* NEW: Added animation */
+  animation: pulse-heat 2s infinite;
+}
+@keyframes pulse-heat {
+  0% { box-shadow: 0 0 10px var(--accent-boost), 0 0 20px var(--accent-boost); }
+  50% { box-shadow: 0 0 16px var(--accent-boost), 0 0 28px var(--accent-boost); }
+  100% { box-shadow: 0 0 10px var(--accent-boost), 0 0 20px var(--accent-boost); }
+}
+
+html[data-theme='nest'] .main-display.heating-active .current-temp {
+  color: #FF6B00; /* Original Nest Orange */
+  text-shadow: 0 0 8px #FF8F00;
+}
+html[data-theme='siemens'] .main-display.heating-active {
+  border-color: var(--accent-boost);
+  animation-name: pulse-heat-siemens;
+}
+@keyframes pulse-heat-siemens {
+  0% { box-shadow: 0 0 12px var(--accent-boost), 0 0 24px var(--accent-boost); }
+  50% { box-shadow: 0 0 18px var(--accent-boost), 0 0 36px var(--accent-boost); }
+  100% { box-shadow: 0 0 12px var(--accent-boost), 0 0 24px var(--accent-boost); }
+}
+html[data-theme='siemens'] .main-display.heating-active .current-temp {
+  color: var(--accent-boost);
+  text-shadow: 0 0 12px var(--accent-boost);
+}
+html[data-theme='apple'] .main-display.heating-active {
+  border-color: var(--accent-boost);
+  animation-name: pulse-heat-apple;
+}
+@keyframes pulse-heat-apple {
+  0% { box-shadow: 0 0 10px var(--accent-boost); }
+  50% { box-shadow: 0 0 20px var(--accent-boost); }
+  100% { box-shadow: 0 0 10px var(--accent-boost); }
+}
+
+/* --- Pre-Heat Pulse Animation (Original) --- */
+.badge.preheat {
+  animation: pulse-preheat 2s infinite;
+}
+@keyframes pulse-preheat {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 122, 255, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 122, 255, 0); }
+}
+/* Theme-specific overrides for pulse color */
+html[data-theme='siemens'] .badge.preheat {
+  animation-name: pulse-siemens;
+}
+@keyframes pulse-siemens {
+  0% { box-shadow: 0 0 0 0 rgba(51, 153, 255, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(51, 153, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(51, 153, 255, 0); }
+}
+html[data-theme='nest'] .badge.preheat {
+  animation-name: pulse-nest;
+}
+@keyframes pulse-nest {
+  0% { box-shadow: 0 0 0 0 rgba(11, 87, 208, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(11, 87, 208, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(11, 87, 208, 0); }
+}
+
+
+/* --- Animated Weather Icons (Original) --- */
+.wicon{ width: 128px; height: 128px; position: relative; }
+.sun{ width: 64px; height: 64px; border-radius: 50%;
+background: radial-gradient(circle at 30% 30%, #fff7, #ffd37a 60%, #e8a83b); position: absolute; left: 32px; top: 32px; animation: spinSun 16s linear infinite;
+}
+@keyframes spinSun{ from{ transform: rotate(0); } to{ transform: rotate(360deg); } }
+.cloud{ width: 90px; height: 48px;
+position: absolute; left: 19px; top: 48px; background: linear-gradient(180deg, #fff, #e9e9e9); border-radius: 24px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.12));
+}
+.cloud:before, .cloud:after{ content: ""; position: absolute; background: inherit; border-radius: 50%; }
+.cloud:before{ width: 40px; height: 40px; left: -12px; top: 6px; }
+.cloud:after{ width: 56px; height: 56px; right: -10px; top: -10px; }
+.float{ animation: floatCloud 5.5s ease-in-out infinite; }
+@keyframes floatCloud{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-4px); } }
+.rain .drop{ width: 3px; height: 12px; background: #7aa8d6; border-radius: 2px; position: absolute; left: 0; top: 0;
+animation: rainDrop .9s linear infinite; }
+@keyframes rainDrop{ from{ transform: translateY(0); opacity: 1; } to{ transform: translateY(26px); opacity: 0; } }
+.snow .flake{ width: 6px; height: 6px; border-radius: 50%; background: #fff; position: absolute; animation: snowFall 1.6s linear infinite;
+}
+@keyframes snowFall{ from{ transform: translateY(0) scale(1); } to{ transform: translateY(24px) scale(.9); opacity: .8; } }
+.lightning{ position: absolute; left: 60px; top: 62px; width: 0; height: 0; border-left: 10px solid transparent;
+border-right: 10px solid transparent; border-bottom: 24px solid #ffd86b; filter: drop-shadow(0 0 6px #ffd86b); animation: flash 2.2s ease-in-out infinite;
+}
+@keyframes flash{ 0%,85%{ opacity: .1; } 86%{ opacity: 1; } 95%{ opacity: .2; } 100%{ opacity: .1; } }
+.fog .bar{ position: absolute; left: 20px; right: 20px; height: 6px; background: linear-gradient(90deg, transparent, rgba(200,200,200,.9), transparent); border-radius: 6px;
+animation: fogMove 6s ease-in-out infinite; }
+.fog .bar:nth-child(1){ top: 58px; animation-delay: 0s; }
+.fog .bar:nth-child(2){ top: 72px; animation-delay: 1s; }
+.fog .bar:nth-child(3){ top: 86px; animation-delay: 2s; }
+@keyframes fogMove{ 0%,100%{ transform: translateX(-8px); } 50%{ transform: translateX(8px); } }
+
+/* --- Weather Details Grid (Original, with theme tweaks) --- */
+.weather-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin: 20px 0 0 0;
+}
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg); 
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sep);
+}
+.detail-icon {
+  width: 28px;
+  height: 28px;
+  fill: var(--text);
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+.detail-item > div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  overflow: hidden; 
+  white-space: nowrap;
+}
+.detail-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.detail-value b {
+  font-size: 1.1rem;
+  color: var(--text);
+  font-weight: 700;
+}
+html[data-theme='siemens'] .detail-item {
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--card-radius);
+}
+html[data-theme='siemens'] .detail-icon {
+  fill: var(--accent-preheat);
+  opacity: 1;
+}
+html[data-theme='nest'] .detail-item {
+  border-radius: 16px;
+  border-color: transparent;
+  background: var(--card); 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+html[data-theme='nest'] .detail-icon {
+  fill: var(--accent);
+  opacity: 1;
+}
+html[data-theme='nest'] .detail-label {
+  color: var(--gray);
+}
+html[data-theme='nest'].dark .detail-item {
+  background: var(--bg);
+}
+
+/* --- NEW: Advanced Schedule List --- */
+.adv-sched-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.sched-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  background: var(--bg);
+  border: 1px solid var(--sep);
+  border-radius: 12px;
+}
+html[data-theme='nest'] .sched-item { border-radius: 16px; }
+html[data-theme='siemens'] .sched-item { border-radius: 4px; }
+
+.sched-item-time {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+.sched-item-day {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+.sched-item-temp {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+}
+.sched-item-controls {
+  display: flex;
+  gap: 8px;
+}
+.sched-item-controls button {
+  padding: 8px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* --- NEW: Diagnostic Gauges --- */
+.gauge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 10px 0;
+}
+.gauge-container {
+  text-align: center;
+}
+.gauge-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-label);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.gauge {
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+  position: relative;
+}
+.gauge-body {
+  width: 100%;
+  height: 0;
+  padding-bottom: 50%; /* Makes it a perfect 2:1 semicircle */
+  background: var(--gauge-bg);
+  border-radius: 100px 100px 0 0;
+  overflow: hidden;
+  position: relative;
+}
+.gauge-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gauge-fill);
+  transform-origin: center bottom;
+  transform: rotate(0deg); /* Controlled by JS */
+  transition: transform 0.5s ease;
+}
+/* This is the needle */
+.gauge-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 49%;
+  width: 2%;
+  height: 100%;
+  background: var(--text);
+  opacity: 0.3;
+}
+.gauge-cover {
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  width: 90%;
+  height: 0;
+  padding-bottom: 45%; /* 90% * 0.5 = 45% */
+  background: var(--gauge-cover);
+  border-radius: 100px 100px 0 0;
+}
+.gauge-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.gauge-unit {
+  font-size: 0.8rem;
+  color: var(--text-label);
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+/* Siemens gauge specifics */
+html[data-theme='siemens'] .gauge-value {
+  font-family: 'Segment7', monospace;
+  font-size: 2rem;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent);
+}
+
+/* --- NEW: Advanced Schedule Delete Button --- */
+.btn-delete {
+  background: #f1f1f1;
+  color: #d90429;
+  font-weight: 700;
+  border: 1px solid var(--sep);
+  opacity: 0.7;
+}
+.btn-delete:hover,
+.btn-delete:focus {
+  opacity: 1;
+  background: #d90429;
+  color: #fff;
+  box-shadow: 0 0 10px #d90429;
+}
+/* Dark mode delete button */
+body.dark .btn-delete {
+  background: #333;
+  color: #ef233c;
+}
+body.dark .btn-delete:hover,
+body.dark .btn-delete:focus {
+  background: #ef233c;
+  color: #fff;
+  box-shadow: 0 0 10px #ef233c;
+}

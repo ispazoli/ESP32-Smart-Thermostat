@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html data-theme="apple" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ESP Thermostat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+</head>
+
+<body>
+<header>
+  <h1>ESP Thermostat</h1>
+  <div class="topright">
+    <span class="clock">--:--</span>
+    <button class="icon" onclick="toggleDark()" title="Day / Night">☀️</button>
+    <button class="icon" id="themeBtn" onclick="cycleTheme()" title="Change Theme">🎨</button>
+  </div>
+</header>
+
+<nav>
+  <div class="tab active" onclick="showTab(0)" id="t0">Thermostat</div>
+  <div class="tab hidden" onclick="showTab(4)" id="t4">Schedule</div>
+  <div class="tab" onclick="showTab(1)" id="t1">System & Stats</div>
+  <div class="tab" onclick="showTab(2)" id="t2">Weather</div>
+  <div class="tab" onclick="showTab(3)" id="t3">Diagnostics</div>
+</nav>
+
+<main>
+  <section class="card view" id="v0">
+    <h2 id="h_ctl">Heating Control</h2>
+
+    <div class="main-display">
+      <div id="sensorError" class="hidden" style="color:red; font-weight:700; margin-bottom:10px;">SENSOR ERROR</div>
+      <div class="current-temp"><span id="curT">--.-</span> °C</div>
+      <div class="target-temp">TARGET: <span id="stat_target_main">--.-</span> °C</div>
+      <div class="program">
+        <label>ACTIVE PROGRAM:</label>
+        <span id="stat_program_main">---</span>
+      </div>
+      <div class="badges">
+        <span id="awayBadge" class="badge hidden" style="background-color: #555; color: #fff;"></span>
+        <span id="preheatBadge" class="badge preheat hidden"></span>
+        <span id="boostBadge" class="badge hidden boost">BOOST</span>
+        <span id="ecoBadge" class="badge hidden eco">ECO</span>
+      </div>
+    </div>
+
+    <div class="function-buttons">
+      <button id="modeBtn" class="primary" onclick="toggleMode()">Auto</button>
+      <button id="boostBtn" class="primary btn-boost" onclick="toggleBoost()"><span class="icon">🔥</span>BOOST</button>
+      <button id="ecoBtn" class="primary btn-eco" onclick="toggleEco()"><span class="icon">🍃</span>ECO</button>
+    </div>
+
+    <div id="manualBlock" class="hidden" style="margin: 10px 0;">
+      <label style="display:block; margin-bottom:6px">Manual Target: <b><span id="mtVal">21.0</span> °C</b></label>
+      <input id="mtSlider" class="slider" type="range" min="16" max="26" step="0.5" value="21.0">
+    </div>
+
+    <div id="boostLeft" class="small hidden center" style="margin: 10px 0;">—</div>
+
+    <div id="simpleSchedBlock">
+      <hr style="border:none; border-top: 1px solid var(--sep); margin:10px 0">
+      <h3 id="h_sch">Schedule (weekday / weekend)</h3>
+      <div class="grid2">
+        <div>
+          <div class="row">
+            <label id="l_wdm">Weekday morning</label>
+            <div>
+              <input id="wd_m" type="time"><input id="wd_tm" type="number" step="0.1" min="5" max="30" style="width:70px"> °C
+            </div>
+          </div>
+          <div class="row">
+            <label id="l_wde">Weekday evening</label>
+            <div>
+              <input id="wd_e" type="time"><input id="wd_te" type="number" step="0.1" min="5" max="30" style="width:70px"> °C
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="row">
+            <label id="l_wem">Weekend morning</label>
+            <div>
+              <input id="we_m" type="time"><input id="we_tm" type="number" step="0.1" min="5" max="30" style="width:70px"> °C
+            </div>
+          </div>
+          <div class="row">
+            <label id="l_wee">Weekend evening</label>
+            <div>
+              <input id="we_e" type="time"><input id="we_te" type="number" step="0.1" min="5" max="30" style="width:70px"> °C
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div></div>
+        <div><button class="primary" onclick="saveSched()" id="b_save_sch">Save Schedule</button></div>
+      </div>
+    </div>
+    
+    <div id="advancedSchedNotice" class="hidden" style="text-align: center; padding: 20px; opacity: 0.8;">
+      <h3 style="margin: 0;" id="h_adv_notice">Advanced Scheduling is Active.</h3>
+      <p style="margin: 4px 0 0 0;" id="p_adv_notice">Edit points on the 'Schedule' tab.</p>
+    </div>
+
+    <hr style="border:none; border-top: 1px solid var(--sep); margin:12px 0">
+    <h3 id="h_log">Temp Log (48h/15m)</h3>
+    <p class="small" id="p_loghint">Download CSV or clear log.</p>
+    <div style="height:260px; margin-bottom:12px;">
+      <canvas id="tempChart"></canvas>
+    </div>
+    <div class="row">
+      <div></div>
+      <div>
+        <a href="/download"><button id="b_csv">CSV</button></a>
+        <button onclick="clearLog()" id="b_clear">Clear</button>
+      </div>
+    </div>
+  </section>
+  
+  <section class="card view hidden" id="v4">
+    <h2 id="h_adv_sched">Advanced Schedule (7-day)</h2>
+    <p class="small" id="p_adv_desc">Add up to 21 schedule points. The thermostat will use the target from the last event that has passed.</p>
+    
+    <div class_="adv-sched-form">
+      <h3 id="h_adv_add">Add New Point</h3>
+      <div class="grid2">
+        <div class="row">
+          <label for="advDay" id="l_adv_day">Day of Week</label>
+          <select id="advDay">
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+            <option value="0">Sunday</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="advTime" id="l_adv_time">Time</label>
+          <input id="advTime" type="time" value="06:00">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="row">
+          <label for="advTemp" id="l_adv_temp">Target Temp</label>
+          <input id="advTemp" type="number" step="0.1" min="5" max="30" value="21.0" style="width:100px;">
+        </div>
+        <div class="row">
+          <label for="advEnabled" id="l_adv_enabled">Enabled</label>
+          <div id="advEnabledToggle" class="toggle on"><div class="knob"></div></div>
+        </div>
+      </div>
+      <div class="row" style="justify-content: flex-end;">
+        <button class="primary" onclick="saveAdvPoint()" id="b_adv_save">Save New Point</button>
+      </div>
+    </div>
+    
+    <hr style="border:none; border-top: 1px solid var(--sep); margin:12px 0">
+    
+    <h3 id="h_adv_points">Current Points</h3>
+    <div id="advSchedList" class="adv-sched-list">
+      </div>
+  </section>
+
+  <section class="card view hidden" id="v1">
+    <h2 id="h_sys">System & Stats</h2>
+    <div class="grid2">
+      <div>
+        <h3 id="h_ctrl_sys">Control</h3>
+        <div class="row">
+          <label id="l_hyst">Hysteresis</label><input id="hyst" type="number" step="0.1" min="0.1" max="1.5" style="width:80px">
+        </div>
+        <div class="row">
+          <label id="l_learn">Smart learning</label>
+          <select id="learn">
+            <option value="1">Enabled</option>
+            <option value="0">Disabled</option>
+          </select>
+        </div>
+        <div class="row">
+          <label id="l_adv_sched_toggle">Advanced Schedule</label>
+          <div id="advSchedToggle" class="toggle"><div class="knob"></div></div>
+        </div>
+        <div class="row">
+          <label id="l_lang">Language</label>
+          <div>
+            <span class="small">HU</span>
+            <div id="langToggle" class="toggle"><div class="knob"></div></div>
+            <span class="small">EN</span>
+          </div>
+        </div>
+        <div class="row">
+          <label id="l_wifi">Wi‑Fi Reconfig</label><button class="primary" onclick="wifiReset()" id="b_wifi">Portal</button>
+        </div>
+        <div class="row">
+          <label>Heating Status</label>
+          <span id="heatBadge" class="badge off" title="Click in manual mode to toggle">Off</span>
+        </div>
+      </div>
+      <div>
+        <h3 id="h_gas">Gas</h3>
+        <div class="row">
+          <label id="l_gmj">Heating Value</label><input id="g_mj" type="number" step="0.01" value="35.91" style="width:100px"> MJ/m³
+        </div>
+        <div class="row">
+          <label id="l_gft">Cost</label><input id="g_ft" type="number" step="0.001" value="2.865" style="width:100px"> Ft/MJ
+        </div>
+        <div class="row">
+          <label id="l_today">Today</label>
+          <div><span id="gasMJ">0.0</span> MJ <span id="gasM3">0.00</span> m³ <span id="gasFt">0</span> Ft</div>
+        </div>
+        <div class="row">
+          <div></div><button class="primary" onclick="saveGas()" id="b_save_gas">Save Gas</button></div>
+      </div>
+    </div>
+    
+    <hr style="border:none; border-top: 1px solid var(--sep); margin:12px 0">
+    <h3 id="h_smart">Smart Features</h3>
+    
+    <div class="grid2">
+      <div>
+        <h4 id="h_presence" style="margin-bottom: 8px;">Smart Presence (Away Mode)</h4>
+        <div class="row">
+          <label id="l_presence_ips">Monitored IP Addresses</label>
+          <input id="pres_ips" type="text" placeholder="192.168.1.10,192.168.1.11">
+        </div>
+        <p class="small" id="p_presence_desc" style="opacity: 0.7; margin: -4px 0 8px 0;">
+          Comma-separated. If none are reachable, 'Away Mode' activates.
+        </p>
+        <div class="row">
+          <label id="l_presence_mins">Away Timeout (minutes)</label>
+          <input id="pres_mins" type="number" min="5" max="120" style="width:80px">
+        </div>
+        <div class="row">
+          <label id="l_presence_temp">Away Temperature (°C)</label>
+          <input id="pres_temp" type="number" min="5" max="18" step="0.5" style="width:80px">
+        </div>
+        <div class="row" style="justify-content: flex-end;">
+          <button class="primary" onclick="savePresence()" id="b_save_presence">Save Presence</button>
+        </div>
+      </div>
+      
+      <div>
+        <h4 id="h_calendar" style="margin-bottom: 8px;">Calendar Integration</h4>
+        <div class="row">
+          <label id="l_cal_mode">Google Calendar Mode</label>
+          <div id="calModeToggle" class="toggle"><div class="knob"></div></div>
+        </div>
+        <p class="small" id="p_cal_desc" style="opacity: 0.7; margin-top: 4px;">
+          Enables Google Calendar override. Requires Google Script setup!
+        </p>
+      </div>
+    </div>
+    
+  </section>
+
+  <section class="card view hidden" id="v2">
+    <h2 id="h_weather">Weather</h2>
+
+    <div class="weather-hero">
+      <div id="wiconWrap" class="wicon" aria-hidden="true"></div>
+      <div class="center">
+        <div style="font-size:1.4rem; font-weight:800"><span id="wcity">—</span> / <span id="wtemp">--.-</span> °C</div>
+        
+        <div class="small" style="margin-top:4px; font-weight: 600;">FEELS LIKE: <b id="wfeels" style="color: var(--accent);">--.-</b> °C</div>
+        
+        <div class="small" id="wdesc" style="margin-top:4px;">—</div>
+      </div>
+    </div>
+
+    <div class="weather-details">
+      
+      <div class="detail-item">
+        <svg class="detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.69c-3.2 0-6 2.6-6 5.8 0 2.28 1.5 4.3 3.6 5.25.3.13.6.38.6.75v6.02c0 .4.34.79.75.79h3.3c.41 0 .75-.39.75-.79v-6.02c0-.37.3-.62.6-.75C16.5 12.79 18 10.77 18 8.49c0-3.2-2.8-5.8-6-5.8zm0 9.81c-1.9 0-3.5-1.5-3.5-3.5S10.1 5.5 12 5.5s3.5 1.5 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>
+        <div>
+          <span class="detail-label">Humidity</span>
+          <span class="detail-value"><b id="whum">--</b> %</span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <svg class="detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.5 6.5c-1.68 0-3.15.8-4.11 2.04-.6-.23-1.24-.35-1.89-.35-2.21 0-4 1.79-4 4s1.79 4 4 4h11c1.66 0 3-1.34 3-3s-1.34-3-3-3h-2.5c0-2.21-1.79-4-4-4zM2.5 9.5c-1.1 0-2 .9-2 2s.9 2 2 2h.5c0 2.21 1.79 4 4 4 .65 0 1.29-.12 1.89-.35C8.05 19.2 6.58 20 5 20H1c-1.1 0-2 .9-2 2s.9 2 2 2h4c2.21 0 4-1.79 4-4s-1.79-4-4-4H2.5z"/></svg>
+        <div>
+          <span class="detail-label">Wind</span>
+          <span class="detail-value"><b id="wwind">--</b> m/s</span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <svg class="detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13V5c0-1.66-1.34-3-3-3S9 3.34 9 5v8c-1.21.91-2 2.37-2 4 0 2.76 2.24 5 5 5s5-2.24 5-5c0-1.63-.79-3.09-2-4zm-3-7c.55 0 1 .45 1 1v5.17c-.31-.1-.65-.17-1-.17s-.69.07-1 .17V7c0-.55.45-1 1-1zm0 14c-1.65 0-3-1.35-3-3 0-1.3.84-2.4 2-2.82V14h2v-2.82c1.16.41 2 1.51 2 2.82 0 1.65-1.35 3-3 3z"/></svg>
+        <div>
+          <span class="detail-label">Min / Max</span>
+          <span class="detail-value"><b id="wminmax">-- / --</b> °C</span>
+        </div>
+      </div>
+      
+      <div class="detail-item">
+        <svg class="detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v5h-2zM10.5 11l1.5 1.5 1.5-1.5v-2h-3z"/></svg>
+        <div>
+          <span class="detail-label">Pressure</span>
+          <span class="detail-value"><b id="wpress">--</b> hPa</span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <svg class="detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 18h16v2H4zm1-12h14v2H5zm12.95 4.55c.32.32.75.5 1.2.5s.88-.18 1.2-.5c.66-.66.66-1.74 0-2.4l-1.4-1.4c-.66-.66-1.74-.66-2.4 0l-1.4 1.4c-.66.66-.66 1.74 0 2.4.66.66 1.74.66 2.4 0zm-8.8 0c.32.32.75.5 1.2.5s.88-.18 1.2-.5c.66-.66.66-1.74 0-2.4l-1.4-1.4c-.66-.66-1.74-.66-2.4 0L5.75 8.15c-.66.66-.66 1.74 0 2.4.66.66 1.74.66 2.4 0zM12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>
+        <div>
+          <span class="detail-label">Sunrise</span>
+          <span class="detail-value"><b id="wsunrise">--:--</b></span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <svg class="detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 18h16v2H4zm1-12h14v2H5zm12.95 4.55c.32.32.75.5 1.2.5s.88-.18 1.2-.5c.66-.66.66-1.74 0-2.4l-1.4-1.4c-.66-.66-1.74-.66-2.4 0l-1.4 1.4c-.66.66-.66 1.74 0 2.4.66.66 1.74.66 2.4 0zm-8.8 0c.32.32.75.5 1.2.5s.88-.18 1.2-.5c.66-.66.66-1.74 0-2.4l-1.4-1.4c-.66-.66-1.74-.66-2.4 0L5.75 8.15c-.66.66-.66 1.74 0 2.4.66.66 1.74.66 2.4 0zM12 13c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/></svg>
+        <div>
+          <span class="detail-label">Sunset</span>
+          <span class="detail-value"><b id="wsunset">--:--</b></span>
+        </div>
+      </div>
+    </div>
+    
+    <hr style="border:none; border-top: 1px solid var(--sep); margin:18px 0 12px 0">
+    
+    <div class="row">
+      <label id="l_city">City</label>
+      <input id="city" type="text" value="Bekescsaba" style="width:250px">
+    </div>
+    <div class="row">
+      <label id="l_key">API key</label>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <input id="apikey" type="password" placeholder="hidden" style="width: 200px;">
+        <a href="#" class="small" onclick="toggleKey(); return false;" id="a_show" style="color:var(--text);">Show</a>
+      </div>
+    </div>
+    <div class="row">
+	
+      <div></div><button class="primary" onclick="saveWeather()" id="b_save_w">Save</button></div>
+    <p class="small" id="p_nodata">If no data: Check API key.</p>
+  </section>
+
+  <section class="card view hidden" id="v3">
+    <h2 id="h_diag">Diagnostics & Health</h2>
+    <div class="row"><label>Device</label><div><span id="devName">-</span> | <span id="uptime">--:--:--</span></div></div>
+    <div class="health-label"><span>Wi‑Fi RSSI</span><span id="rssiPct">0%</span></div>
+    <div class="health-bar"><div id="rssiFill" class="health-fill" style="width:0%"></div></div>
+    <div class="health-label"><span>NTP Sync</span><span id="ntpVal">—</span></div>
+    <div class="health-bar"><div id="ntpFill" class="health-fill" style="width:0%"></div></div>
+    
+    <div class="health-label"><span id="l_presence_ping">Presence Ping</span><span id="presenceVal">—</span></div>
+    <div class="health-bar"><div id="presenceFill" class="health-fill" style="width:0%"></div></div>
+    
+    <div class="health-label"><span>CPU Load</span><span id="cpuVal">0%</span></div>
+    <div class="health-bar"><div id="cpuFill" class="health-fill" style="width:0%"></div></div>
+
+    <div id="diagLearnOld">
+      <div class="health-label"><span id="l_learnslope">Learning Slope</span><span id="learnVal">--.-</span></div>
+      <div class="health-bar"><div id="learnFill" class="health-fill" style="width:0%"></div></div>
+    </div>
+    
+    <div id="diagLearnNew" class="hidden">
+      <hr style="border:none; border-top: 1px solid var(--sep); margin:12px 0">
+      <h3 id="h_learn_diag">Smart Learning Diagnostics</h3>
+      <div class="gauge-grid">
+        <div class="gauge-container">
+          <div class="gauge-label" id="l_gain_rate">Boiler Heat-Up Rate</div>
+          <div class="gauge">
+            <div class="gauge-body">
+              <div class="gauge-fill" id="gaugeFillGain"></div>
+              <div class="gauge-cover"></div>
+            </div>
+            <div class="gauge-value" id="gaugeValGain">0.00</div>
+            <div class="gauge-unit">°C/h</div>
+          </div>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge-label" id="l_loss_coeff">Building Efficiency</div>
+          <div class="gauge">
+            <div class="gauge-body">
+              <div class="gauge-fill" id="gaugeFillLoss"></div>
+              <div class="gauge-cover"></div>
+            </div>
+            <div class="gauge-value" id="gaugeValLoss">0.0000</div>
+            <div class="gauge-unit" id="l_loss_unit">(Loss Coeff)</div>
+          </div>
+        </div>
+      </div>
+      <p class="small" id="p_learn_desc" style="text-align: center; margin-top: 10px;">
+        'Heat-Up Rate' is your boiler's power. 'Efficiency' shows how fast your building loses heat (lower is better).
+      </p>
+    </div>
+    
+    <div class="health-label"><span>Heap Memory</span><span id="heapVal">0%</span></div>
+    <div class="health-bar"><div id="heapFill" class="health-fill" style="width:0%"></div></div>
+    <hr style="border:none; border-top: 1px solid var(--sep); margin:12px 0">
+    <h3 id="h_dev">Device info</h3>
+    <div id="devinfo" class="devgrid"></div>
+    <div class="row" style="justify-content:flex-end">
+      <button id="rebootBtn" class="primary" title="Ctrl + Click to reboot">Reboot</button>
+      <a class="primary" href="/diag.json">JSON</a>
+    </div>
+  </section>
+</main>
+
+<footer>ESP Thermostat - by Ispa & ChatGPT 2025</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
