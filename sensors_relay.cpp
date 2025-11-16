@@ -57,7 +57,7 @@ static bool getRelayStatus() {
   if (http.begin(url)) {
     int code = http.GET();
     if (code == 200) {
-      bool status = parseTasmotaPayloadForTemp(http.getString());
+      bool status = parseTasmotaRelayStatus(http.getString());
       http.end();
       return status;
     }
